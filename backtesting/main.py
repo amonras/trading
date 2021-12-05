@@ -1,13 +1,11 @@
 import datetime
 import logging
-from typing import List
 
 import backtester
-import optimizer
+from backtesting.genetic import optimize
 from data_collector import collect_all
 from exchanges.binance import BinanceClient
 from exchanges.ftx import FtxClient
-from models import BacktestResult
 from utils import TF_EQUIV
 
 logger = logging.getLogger()
@@ -31,7 +29,7 @@ if __name__ == '__main__':
     mode = input("Chose program mode (data / backtest / optimize)").lower()
 
     while True:
-        exchange = "binance"  # input("Chose an exchange: ").lower()
+        exchange = input("Chose an exchange: ").lower()
         if exchange in ['binance', 'ftx']:
             break
 
@@ -44,7 +42,7 @@ if __name__ == '__main__':
     print(client.symbols)
 
     while True:
-        symbol = "BTCUSDT"  # input("Chose a symbol: ").upper()
+        symbol = input("Choose a symbol: ").upper()
         if symbol in client.symbols:
             break
 
@@ -63,13 +61,13 @@ if __name__ == '__main__':
 
         # Timeframe
         while True:
-            tf = '15m'  # input(f"Choose a timeframe ({', '.join(TF_EQUIV.keys())})").lower()
+            tf = input(f"Choose a timeframe ({', '.join(TF_EQUIV.keys())})").lower()
             if tf in TF_EQUIV.keys():
                 break
 
         # From
         while True:
-            from_time = ""  # input(f"Backtest from (yyyy-mm-dd or press ENTER): ").lower()
+            from_time = input(f"Backtest from (yyyy-mm-dd or press ENTER): ").lower()
             if from_time == "":
                 from_time = 0
                 break
@@ -82,7 +80,7 @@ if __name__ == '__main__':
 
         # To
         while True:
-            to_time = ""  # input(f"Backtest to (yyyy-mm-dd or press ENTER): ").lower()
+            to_time = input(f"Backtest to (yyyy-mm-dd or press ENTER): ").lower()
             if to_time == "":
                 to_time = int(datetime.datetime.now().timestamp() * 1000)
                 break
@@ -100,54 +98,16 @@ if __name__ == '__main__':
             # Population size
             while True:
                 try:
-                    pop_size = int(input(f'Chose a population size: '))
+                    pop_size = int(input(f'Choose a population size: '))
                     break
                 except ValueError:
                     continue
             # Iterations
             while True:
                 try:
-                    generations = int(input(f'Chose a number of generations: '))
+                    generations = int(input(f'Choose a number of generations: '))
                     break
                 except ValueError:
                     continue
 
-            nsga2 = optimizer.Nsga2(exchange, symbol, strategy, tf, from_time, to_time, pop_size)
-
-            p_population = nsga2.create_initial_population()
-            p_population = nsga2.evaluate_population(p_population)
-            p_population = nsga2.crowding_distance(p_population)
-
-            g = 0
-            while g < generations:
-                q_population = nsga2.create_offspring_population(p_population)
-                q_population = nsga2.evaluate_population(q_population)
-
-                r_population = p_population + q_population
-
-                nsga2.population_params.clear()
-
-                i = 0
-                population = dict()
-                for bt in r_population:
-                    bt.reset_results()
-                    nsga2.population_params.append(bt.parameters)
-                    population[i] = bt
-                    i += 1
-
-                fronts = nsga2.non_dominated_sorting(population)
-                for j in range(len(fronts)):
-                    fronts[j] = nsga2.crowding_distance(fronts[j])
-
-                p_population = nsga2.create_new_population(fronts)
-
-                print(f"\r{int((g + 1)/generations  * 100)}", end='')
-
-                g += 1
-
-            for individual in p_population:
-                print(individual)
-
-
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+            optimize(exchange, symbol, strategy, tf, from_time, to_time, pop_size, generations)
