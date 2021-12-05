@@ -9,14 +9,12 @@ pd.set_option("display.width", 1000)
 
 
 class Ichimoku(NativeStrategy):
-    def __init__(self, tenkan_period: int, kijun_period: int):
+    def __init__(self, tenkan: int, kijun: int):
         super().__init__()
-        self.tenkan_period: int = tenkan_period
-        self.kijun_period: int = kijun_period
+        self.tenkan_period: int = tenkan
+        self.kijun_period: int = kijun
 
-    def backtest(self):
-        df = self._get_data()
-
+    def _backtest(self, df):
         # Tenkan Sen : Short-term signal line
 
         df["rolling_min_tenkan"] = df["low"].rolling(window=self.tenkan_period).min()

@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Optional
 
 import pandas as pd
 
@@ -21,7 +21,7 @@ class Strategy:
         self.from_time: int = from_time
         self.to_time: int = to_time
 
-    def backtest(self) -> Tuple[float, float]:
+    def backtest(self, df: Optional[pd.DataFrame] = None) -> Tuple[float, float]:
         pass
 
 
@@ -39,5 +39,11 @@ class NativeStrategy(Strategy):
         data = resample_timeframe(data, self.tf)
         return data
 
-    def backtest(self):
+    def backtest(self, df: Optional[pd.DataFrame] = None) -> Tuple[float, float]:
+        if df is None:
+            df = self._get_data()
+
+        return self._backtest(df)
+
+    def _backtest(self, df: pd.DataFrame) -> Tuple[float, float]:
         pass

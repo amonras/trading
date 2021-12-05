@@ -21,9 +21,7 @@ class SupportResistance(NativeStrategy):
         self.take_profit: float = take_profit
         self.stop_loss: float = stop_loss        
         
-    def backtest(self):
-        df = self._get_data()
-
+    def _backtest(self, df):
         candle_length = df.iloc[1].name - df.iloc[0].name
     
         pnl = 0
