@@ -2,12 +2,8 @@ import datetime
 
 import pytest
 
-from strategies.ichimoku import Ichimoku
-from strategies.obv import Obv
-from strategies.psar import Psar
-from strategies.sma import Sma
+from strategies import *
 from strategies.strategy import Strategy
-from strategies.support_resistance import SupportResistance
 
 
 @pytest.fixture(
