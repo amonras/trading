@@ -20,7 +20,10 @@ class SupportResistance(NativeStrategy):
         self.rounding_nb: float = rounding_nb
         self.take_profit: float = take_profit
         self.stop_loss: float = stop_loss        
-        
+
+    def name(self):
+        return 'sup_res'
+
     def _backtest(self, df):
         candle_length = df.iloc[1].name - df.iloc[0].name
     

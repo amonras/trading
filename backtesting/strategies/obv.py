@@ -13,6 +13,9 @@ class Obv(NativeStrategy):
         super().__init__()
         self.ma_period: int = ma_period
 
+    def name(self):
+        return 'obv'
+
     def _backtest(self, df):
         df["obv"] = (np.sign(df["close"].diff()) * df["volume"]).fillna(0).cumsum()
         df["obv_ma"] = round(df["obv"].rolling(window=self.ma_period).mean(), 2)

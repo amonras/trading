@@ -21,6 +21,9 @@ class Strategy:
         self.from_time: int = from_time
         self.to_time: int = to_time
 
+    def name(self):
+        pass
+
     def backtest(self, df: Optional[pd.DataFrame] = None) -> Tuple[float, float]:
         pass
 

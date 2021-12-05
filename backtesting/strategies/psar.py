@@ -11,6 +11,9 @@ class Psar(Strategy):
         self.acc_increment = acc_increment
         self.max_acc = max_acc
 
+    def name(self):
+        return 'psar'
+
     def backtest(self) -> Tuple[float, float]:
         lib = get_library()
 

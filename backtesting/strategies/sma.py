@@ -10,6 +10,9 @@ class Sma(Strategy):
         self.slow_ma = slow_ma
         self.fast_ma = fast_ma
 
+    def name(self):
+        return 'sma'
+
     def backtest(self) -> Tuple[float, float]:
         lib = get_library()
 

@@ -14,6 +14,9 @@ class Ichimoku(NativeStrategy):
         self.tenkan_period: int = tenkan
         self.kijun_period: int = kijun
 
+    def name(self):
+        return 'ichimoku'
+
     def _backtest(self, df):
         # Tenkan Sen : Short-term signal line
 
