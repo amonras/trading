@@ -2,11 +2,16 @@ import datetime
 import logging
 
 import backtester
-from backtesting.genetic import optimize
+from optimization.genetic import optimize
 from data_collector import collect_all
 from exchanges.binance import BinanceClient
 from exchanges.ftx import FtxClient
-from utils import TF_EQUIV
+from strategies.ichimoku import Ichimoku
+from strategies.obv import Obv
+from strategies.psar import Psar
+from strategies.sma import Sma
+from strategies.support_resistance import SupportResistance
+from utils import TF_EQUIV, STRAT_PARAMS
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -92,7 +97,30 @@ if __name__ == '__main__':
                 continue
 
         if mode == 'backtest':
-            print(backtester.run(exchange, symbol, strategy, tf, from_time, to_time))
+            strategy_mapping = {
+                'obj': Obv,
+                'ichimoku': Ichimoku,
+                'sup_res': SupportResistance,
+                'sma': Sma,
+                'psar': Psar,
+            }
+
+            params_des = STRAT_PARAMS[strategy]
+
+            params = dict()
+
+            for p_code, p in params_des.items():
+                while True:
+                    try:
+                        params[p_code] = p['type'](input(p['name'] + ': '))
+                        break
+                    except ValueError:
+                        continue
+
+            obj = strategy_mapping[strategy](**params)
+            obj.set_target(exchange, symbol, tf, from_time, to_time)
+            print(obj.backtest())
+            # print(backtester.run(exchange, symbol, strategy, tf, from_time, to_time))
 
         elif mode == 'optimize':
             # Population size
