@@ -30,7 +30,6 @@ void Sma::execute_backtest(int slow_ma, int fast_ma) {
 
     vector<double> slow_ma_closes = {};
     vector<double> fast_ma_closes = {};
-    printf("%lu\n", ts.size());
 
     for (int i = 0; i < ts.size(); i++) {
         slow_ma_closes.push_back(close[i]);
@@ -65,7 +64,6 @@ void Sma::execute_backtest(int slow_ma, int fast_ma) {
             
             current_position = 1;
             entry_price = close[i];
-            printf("%i: entering position\n", i);
         }
 
         // Short signal
@@ -80,9 +78,7 @@ void Sma::execute_backtest(int slow_ma, int fast_ma) {
             
             current_position = -1;
             entry_price = close[i];
-            printf("%i: exiting position\n", i);
         }
-
     }
 }
 

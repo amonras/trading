@@ -10,8 +10,13 @@ logger = logging.getLogger()
 
 
 class Hdf5Client:
-    def __init__(self, exchange):
-        self.hf = h5py.File(f"data/{exchange}.h5", "a")
+    def __init__(self, exchange, path=None):
+        if path is None:
+            filename = f"data/{exchange}.h5"
+        else:
+            filename = f"{path}/{exchange}.h5"
+
+        self.hf = h5py.File(filename, "a")
         self.hf.flush()
 
     def create_dataset(self, symbol: str):
@@ -66,7 +71,6 @@ class Hdf5Client:
                     (len(df.index), symbol, query_time))
 
         return df
-
 
     def get_first_last_timestamp(self, symbol: str) -> Union[Tuple[None, None], Tuple[float, float]]:
 

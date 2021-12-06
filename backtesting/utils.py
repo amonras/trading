@@ -48,6 +48,7 @@ def resample_timeframe(data: pd.DataFrame, tf: str) -> pd.DataFrame:
         }
     )
 
+
 def get_library():
     lib = CDLL("backtestingCpp/build/libbacktestingCpp.dylib", winmode=0)
 
