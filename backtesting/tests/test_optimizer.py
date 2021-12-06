@@ -2,10 +2,8 @@ import datetime
 
 import pytest
 
-from models import BacktestResult
-from optimization.optimizer import Nsga2
-from strategies import *
-from strategies.strategy import Strategy
+from backtesting.models.models import BacktestResult
+from backtesting.optimization.optimizer import Nsga2
 
 exchange = 'binance'
 symbol = 'BTCUSDT'

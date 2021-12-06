@@ -5,7 +5,7 @@ import copy
 from strategies.strategy import NativeStrategy, Strategy
 from utils import STRAT_PARAMS, resample_timeframe
 
-from database import Hdf5Client
+from storage.database import Hdf5Client
 from models import BacktestResult
 
 from strategies import *

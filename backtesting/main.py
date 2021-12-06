@@ -1,9 +1,8 @@
 import datetime
 import logging
 
-import backtester
 from optimization.genetic import optimize
-from data_collector import collect_all
+from storage.data_collector import collect_all
 from exchanges.binance import BinanceClient
 from exchanges.ftx import FtxClient
 from strategies.ichimoku import Ichimoku
