@@ -5,7 +5,7 @@
 class Database
 {
     public: 
-        Database(const std::string& file_name);
+        Database(const std::string& file_name, const std::string& path);
         void close_file();
         
         

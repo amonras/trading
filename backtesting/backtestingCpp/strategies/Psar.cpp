@@ -5,13 +5,14 @@
 
 using namespace std;
 
-Psar::Psar(char* exchange_c, char* symbol_c, char* timeframe_c, long long from_time, long long to_time)
+Psar::Psar(char* exchange_c, char* symbol_c, char* timeframe_c, long long from_time, long long to_time, char* path_c)
 {
     exchange = exchange_c;
     symbol = symbol_c;
     timeframe = timeframe_c;
+    path = path_c;
 
-    Database db(exchange);
+    Database db(exchange, path);
     int array_size = 0;
     double** res = db.get_data(symbol, exchange, array_size);
     db.close_file();
@@ -97,7 +98,7 @@ void Psar::execute_backtest(double initial_acc, double accel_increment, double m
             
             current_position = 1;
             entry_price = close[i];
-            printf("%i: entering position\n", i);
+            // printf("%i: entering position\n", i);
         }
 
         // Short signal
@@ -111,7 +112,7 @@ void Psar::execute_backtest(double initial_acc, double accel_increment, double m
             
             current_position = -1;
             entry_price = close[i];
-            printf("%i: exiting position\n", i);
+            // printf("%i: exiting position\n", i);
         }
 
         trend[0] = trend[1];
@@ -122,8 +123,8 @@ void Psar::execute_backtest(double initial_acc, double accel_increment, double m
 }
 
 extern "C" {
-    Psar* Psar_new(char* exchange, char* symbol, char* timeframe, long long from_time, long long to_time) {
-        return new Psar(exchange,  symbol, timeframe, from_time, to_time);
+    Psar* Psar_new(char* exchange, char* symbol, char* timeframe, long long from_time, long long to_time, char* path) {
+        return new Psar(exchange,  symbol, timeframe, from_time, to_time, path);
     }
     void Psar_execute_backtest(Psar* psar, double initial_acc, double acc_increment, double max_acc) {
         return psar->execute_backtest(initial_acc, acc_increment, max_acc);

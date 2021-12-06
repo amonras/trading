@@ -27,8 +27,9 @@ int main(int, char**) {
     char* symbol_char =  strcpy((char*)malloc(symbol.length() + 1), symbol.c_str());
     char* exchange_char = strcpy((char*)malloc(exchange.length() + 1), exchange.c_str());
     char* tf_char = strcpy((char*)malloc(timeframe.length() + 1), timeframe.c_str());
+    char* path = "";
 
-    Psar psar(exchange_char, symbol_char, tf_char, 1609344600000.0, 1609354200000.0);
+    Psar psar(exchange_char, symbol_char, tf_char, 1609344600000.0, 1609354200000.0, path);
     psar.execute_backtest(0.02, 0.02, 0.2);
     printf("%f | %f\n", psar.pnl, psar.max_dd);
 }
