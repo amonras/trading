@@ -3,9 +3,9 @@ import typing
 import logging
 
 from exchanges.binance import BinanceClient
-from database import Hdf5Client
+from storage.database import Hdf5Client
 from exchanges.ftx import FtxClient
-from utils import ms_to_dt, resample_timeframe
+from utils import ms_to_dt
 
 logger = logging.getLogger()
 

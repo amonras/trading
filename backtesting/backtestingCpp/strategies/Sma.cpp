@@ -5,13 +5,14 @@
 
 using namespace std;
 
-Sma::Sma(char* exchange_c, char* symbol_c, char* timeframe_c, long long from_time, long long to_time)
+Sma::Sma(char* exchange_c, char* symbol_c, char* timeframe_c, long long from_time, long long to_time, char* path_c)
 {
     exchange = exchange_c;
     symbol = symbol_c;
     timeframe = timeframe_c;
+    path = path_c;
 
-    Database db(exchange);
+    Database db(exchange, path);
     int array_size = 0;
     double** res = db.get_data(symbol, exchange, array_size);
     db.close_file();
@@ -83,8 +84,8 @@ void Sma::execute_backtest(int slow_ma, int fast_ma) {
 }
 
 extern "C" {
-    Sma* Sma_new(char* exchange, char* symbol, char* timeframe, long long from_time, long long to_time) {
-        return new Sma(exchange,  symbol, timeframe, from_time, to_time);
+    Sma* Sma_new(char* exchange, char* symbol, char* timeframe, long long from_time, long long to_time, char* path) {
+        return new Sma(exchange,  symbol, timeframe, from_time, to_time, path);
     }
 
     void Sma_execute_backtest(Sma* sma, int slow_ma, int fast_ma) {

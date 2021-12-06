@@ -1,4 +1,5 @@
 import datetime
+import pathlib
 from ctypes import c_void_p, c_char_p, c_longlong, c_int, c_double, CDLL
 
 import pandas as pd
@@ -50,11 +51,11 @@ def resample_timeframe(data: pd.DataFrame, tf: str) -> pd.DataFrame:
 
 
 def get_library():
-    lib = CDLL("backtestingCpp/build/libbacktestingCpp.dylib", winmode=0)
+    lib = CDLL(pathlib.Path(__file__).parent.parent / "backtestingCpp/build/libbacktestingCpp.dylib", winmode=0)
 
     # SMA
     lib.Sma_new.restype = c_void_p
-    lib.Sma_new.argtypes = [c_char_p, c_char_p, c_char_p, c_longlong, c_longlong]
+    lib.Sma_new.argtypes = [c_char_p, c_char_p, c_char_p, c_longlong, c_longlong, c_char_p]
     lib.Sma_execute_backtest.restype = c_void_p
     lib.Sma_execute_backtest.argtypes = [c_void_p, c_int, c_int]
 

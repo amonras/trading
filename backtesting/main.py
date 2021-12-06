@@ -1,9 +1,8 @@
 import datetime
 import logging
 
-import backtester
 from optimization.genetic import optimize
-from data_collector import collect_all
+from storage.data_collector import collect_all
 from exchanges.binance import BinanceClient
 from exchanges.ftx import FtxClient
 from strategies.ichimoku import Ichimoku
@@ -138,4 +137,7 @@ if __name__ == '__main__':
                 except ValueError:
                     continue
 
-            optimize(exchange, symbol, strategy, tf, from_time, to_time, pop_size, generations)
+            results = optimize(exchange, symbol, strategy, tf, from_time, to_time, pop_size, generations)
+
+            for indiv in results:
+                print(indiv)

@@ -2,7 +2,7 @@ from typing import Tuple, Optional
 
 import pandas as pd
 
-from database import Hdf5Client
+from storage.database import Hdf5Client
 from utils import resample_timeframe
 
 

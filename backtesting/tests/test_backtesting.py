@@ -2,8 +2,8 @@ import datetime
 
 import pytest
 
-from strategies import *
-from strategies.strategy import Strategy
+from backtesting.strategies import *
+from backtesting.strategies.strategy import Strategy
 
 
 @pytest.fixture(
