@@ -1,3 +1,4 @@
+import pathlib
 from typing import Tuple
 
 from strategies.strategy import Strategy
@@ -16,7 +17,15 @@ class Sma(Strategy):
     def backtest(self) -> Tuple[float, float]:
         lib = get_library()
 
-        obj = lib.Sma_new(self.exchange.encode(), self.symbol.encode(), self.tf.encode(), self.from_time, self.to_time)
+        path = str((pathlib.Path(__file__).parent.parent / 'data').absolute())
+        obj = lib.Sma_new(
+            self.exchange.encode(),
+            self.symbol.encode(),
+            self.tf.encode(),
+            self.from_time,
+            self.to_time,
+            path.encode()
+        )
         lib.Sma_execute_backtest(obj, self.slow_ma, self.fast_ma)
         pnl = lib.Sma_get_pnl(obj)
         max_drawdown = lib.Sma_get_max_dd(obj)

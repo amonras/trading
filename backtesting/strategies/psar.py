@@ -1,3 +1,4 @@
+import pathlib
 from typing import Tuple
 
 from strategies.strategy import Strategy
@@ -17,7 +18,16 @@ class Psar(Strategy):
     def backtest(self) -> Tuple[float, float]:
         lib = get_library()
 
-        obj = lib.Psar_new(self.exchange.encode(), self.symbol.encode(), self.tf.encode(), self.from_time, self.to_time)
+        path = str((pathlib.Path(__file__).parent.parent / 'data').absolute())
+
+        obj = lib.Psar_new(
+            self.exchange.encode(),
+            self.symbol.encode(),
+            self.tf.encode(),
+            self.from_time,
+            self.to_time,
+            path.encode()
+        )
         lib.Psar_execute_backtest(obj, self.initial_acc, self.acc_increment, self.max_acc)
         pnl = lib.Psar_get_pnl(obj)
         max_drawdown = lib.Psar_get_max_dd(obj)
