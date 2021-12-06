@@ -6,18 +6,17 @@ using namespace std;
 
 Database::Database(const string& file_name)
 {
-    string FILE_NAME = "../../data/" + file_name + ".h5";
+    string FILE_NAME = "data/" + file_name + ".h5";
     hid_t fapl = H5Pcreate(H5P_FILE_ACCESS);
 
 
     herr_t status = H5Pset_libver_bounds(fapl, H5F_LIBVER_LATEST, H5F_LIBVER_LATEST);
     status = H5Pset_fclose_degree(fapl, H5F_CLOSE_STRONG);
     
-    printf("Opening %s\n", FILE_NAME.c_str());
     h5_file = H5Fopen(FILE_NAME.c_str(), H5F_ACC_RDONLY, fapl);
 
     if (h5_file < 0) {
-        string FILE_NAME = "data/" + file_name + ".h5";
+        string FILE_NAME = "../../data/" + file_name + ".h5";
         h5_file = H5Fopen(FILE_NAME.c_str(), H5F_ACC_RDONLY, fapl);
         if (h5_file < 0) {
             printf("Error while opening %s\n", FILE_NAME.c_str());
@@ -57,7 +56,6 @@ double** Database::get_data(const string& symbol, const string& exchange, int& a
     {
         results[i] = new double[dims[1]];
     }
-    printf("Here\n");
 
     double* candles_arr = new double[dims[0] * dims[1]];
 
@@ -87,7 +85,7 @@ double** Database::get_data(const string& symbol, const string& exchange, int& a
 
     auto end_ts = chrono::high_resolution_clock::now();
     auto read_duration = chrono::duration_cast<chrono::milliseconds> (end_ts - start_ts);
-    printf("Fetched %i %s %s data in %i ms\n",(int)dims[0], exchange.c_str(), symbol.c_str(), (int)read_duration.count());
+    // printf("Fetched %i %s %s data in %i ms\n",(int)dims[0], exchange.c_str(), symbol.c_str(), (int)read_duration.count());
 
     return results;
 
