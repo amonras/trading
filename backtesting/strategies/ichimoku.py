@@ -17,7 +17,7 @@ class Ichimoku(NativeStrategy):
     def name(self):
         return 'ichimoku'
 
-    def _backtest(self, df):
+    def _compute_history(self, df):
         # Tenkan Sen : Short-term signal line
 
         df["rolling_min_tenkan"] = df["low"].rolling(window=self.tenkan_period).min()
@@ -74,10 +74,33 @@ class Ichimoku(NativeStrategy):
 
         df = df[df["signal"] != 0].copy()
 
+        df['close_pct_change'] = df["close"].pct_change()
+
         df["pnl"] = df["close"].pct_change() * df["signal"].shift(1)
 
         df["cum_pnl"] = df["pnl"].cumsum()
         df["max_cum_pnl"] = df["cum_pnl"].cummax()
         df["drawdown"] = df["max_cum_pnl"] - df["cum_pnl"]
 
+        return df
+
+    def _backtest(self, df):
+
+        df = self._compute_history(df)
+
         return df["pnl"].sum(), df["drawdown"].max()
+
+    def _trade_history(self, df) -> pd.DataFrame:
+        raw_df = self._compute_history(df)
+
+        mask = raw_df['pnl'].notna()
+
+        trades = pd.DataFrame({
+            'position': raw_df[mask.shift(-1).fillna(False)]['signal'].values,
+            'enter_at': raw_df[mask].index.values,
+            'exit_at': raw_df[mask.shift(1).fillna(False)].index.values,
+            'open': raw_df[mask]['open'].values,
+            'close': raw_df[mask]['close'].values
+        })
+
+        return trades

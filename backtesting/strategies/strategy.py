@@ -1,5 +1,5 @@
 from typing import Tuple, Optional
-
+import numpy as np
 import pandas as pd
 
 from storage.database import Hdf5Client
@@ -26,6 +26,19 @@ class Strategy:
 
     def backtest(self, df: Optional[pd.DataFrame] = None) -> Tuple[float, float]:
         pass
+
+    def _trade_history(self, df) -> pd.DataFrame:
+        pass
+
+    def trade_history(self, df) -> pd.DataFrame:
+        trades = self._trade_history(df)
+
+        trades['pnl'] = trades['position'] * (trades['close'] - trades['open']) / trades['open']
+        trades['log-returns'] = np.log(1 + trades['pnl'])
+        trades['log-cum-returns'] = trades['log-returns'].cumsum()
+        trades['cum-returns'] = np.exp(trades['log-cum-returns'])
+
+        return trades
 
 
 class NativeStrategy(Strategy):
