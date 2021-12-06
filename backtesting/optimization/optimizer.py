@@ -2,14 +2,13 @@ import random
 from typing import List, Dict
 import copy
 
-from utils import STRAT_PARAMS, resample_timeframe, get_library
+from strategies.strategy import NativeStrategy, Strategy
+from utils import STRAT_PARAMS, resample_timeframe
 
 from database import Hdf5Client
 from models import BacktestResult
 
-import strategies.obv
-import strategies.ichimoku
-import strategies.support_resistance
+from strategies import *
 
 
 class Nsga2:
@@ -27,21 +26,31 @@ class Nsga2:
 
         self.population_params = []
 
-        if self.strategy in ['obv', 'ichimoku', 'sup_res']:
+        if self.strategy == 'obv':
+            self.strategy_class = Obv
+        elif self.strategy == 'ichimoku':
+            self.strategy_class = Ichimoku
+        elif self.strategy == 'sup_res':
+            self.strategy_class = SupportResistance
+        elif self.strategy == 'sma':
+            self.strategy_class = Sma
+        elif self.strategy == 'psar':
+            self.strategy_class = Psar
+        else:
+            print('unknown strategy name')
+
+        if issubclass(self.strategy_class, NativeStrategy):
+            # In this case we can factor out data collection
             h5_db = Hdf5Client(exchange)
             self.data = h5_db.get_data(symbol, from_time, to_time)
             self.data = resample_timeframe(self.data, tf)
 
-        elif self.strategy in ['psar', 'sma']:
-
-            self.lib = get_library()
-
-            if self.strategy == 'sma':
-                self.obj = self.lib.Sma_new(exchange.encode(), symbol.encode(), tf.encode(), from_time, to_time)
-            if self.strategy == 'psar':
-                self.obj = self.lib.Sma_new(exchange.encode(), symbol.encode(), tf.encode(), from_time, to_time)
-
     def create_initial_population(self) -> List[BacktestResult]:
+        """
+        Creates population of BacktestResults, ensuring no repeated instances.
+        Backtest results are unevaluated
+        :return:
+        """
         population = []
 
         while len(population) < self.population_size:
@@ -59,6 +68,12 @@ class Nsga2:
         return population
 
     def create_new_population(self, fronts: List[List[BacktestResult]]) -> List[BacktestResult]:
+        """
+        Return as many backtest results from a list of lists (dominated sorting fronts) as determined
+        in self.population_size.
+        :param fronts:
+        :return:
+        """
 
         new_pop = []
 
@@ -196,44 +211,25 @@ class Nsga2:
         return fronts
 
     def evaluate_population(self, population: List[BacktestResult]) -> List[BacktestResult]:
-        if self.strategy == 'obv':
-            for bt in population:
-                bt.pnl, bt.max_dd = strategies.obv.backtest(self.data, ma_period=bt.parameters['ma_period'])
-
-        elif self.strategy == 'ichimoku':
-            for bt in population:
-                bt.pnl, bt.max_dd = strategies.ichimoku.backtest(self.data,
-                                                                 tenkan_period=bt.parameters['tenkan'],
-                                                                 kijun_period=bt.parameters['kijun'])
-
-        elif self.strategy == 'sup_res':
-
-            for bt in population:
-                bt.pnl, bt.max_dd = strategies.support_resistance.backtest(self.data,
-                                                                           min_points=bt.parameters['min_points'],
-                                                                           min_diff_points=bt.parameters[
-                                                                               'min_diff_points'],
-                                                                           rounding_nb=bt.parameters['rounding_nb'],
-                                                                           take_profit=bt.parameters['take_profit'],
-                                                                           stop_loss=bt.parameters['stop_loss']
-                                                                           )
-
-        elif self.strategy == 'sma':
-            for bt in population:
-                self.lib.Sma_execute_backtest(self.obj, bt.parameters['slow_ma'], bt.parameters['fast_ma'])
-                bt.pnl = self.lib.Sma_get_pnl(self.obj)
-                bt.max_dd = self.lib.Sma_get_max_dd(self.obj)
-
-        elif self.strategy == 'psar':
-            for bt in population:
-                self.lib.Psar_execute_backtest(self.obj, bt.parameters['initial_acc'], bt.parameters['acc_increment'],
-                                               bt.parameters['max_acc'])
-                bt.pnl = self.lib.Psar_get_pnl(self.obj)
-                bt.max_dd = self.lib.Psar_get_max_dd(self.obj)
-
         for bt in population:
+            obj: Strategy = self.strategy_class(**bt.parameters)
+
+            if isinstance(obj, NativeStrategy):
+                # Bypass data collection if possible
+                bt.pnl, bt.max_dd = obj.backtest(self.data)
+            else:
+                obj.set_target(
+                    exchange=self.exchange,
+                    symbol=self.symbol,
+                    tf=self.tf,
+                    from_time=self.from_time,
+                    to_time=self.to_time
+                )
+                bt.pnl, bt.max_dd = obj.backtest()
+
+            # Avoid conservative strategy to not trade
             if bt.pnl == 0:
-                bt.pnl = -float('inf')
-                bt.max_dd = float('inf')
+                bt.pnl = -float("inf")
+                bt.max_dd = float("inf")
 
         return population

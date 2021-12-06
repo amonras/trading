@@ -1,4 +1,5 @@
-from backtesting import optimizer
+from optimization import optimizer
+from tqdm import tqdm
 
 
 def optimize(exchange, symbol, strategy, tf, from_time, to_time, pop_size, generations):
@@ -8,8 +9,7 @@ def optimize(exchange, symbol, strategy, tf, from_time, to_time, pop_size, gener
     p_population = nsga2.evaluate_population(p_population)
     p_population = nsga2.crowding_distance(p_population)
 
-    g = 0
-    while g < generations:
+    for g in tqdm(range(generations)):
         q_population = nsga2.create_offspring_population(p_population)
         q_population = nsga2.evaluate_population(q_population)
 
@@ -30,10 +30,6 @@ def optimize(exchange, symbol, strategy, tf, from_time, to_time, pop_size, gener
             fronts[j] = nsga2.crowding_distance(fronts[j])
 
         p_population = nsga2.create_new_population(fronts)
-
-        print(f"\r{int((g + 1) / generations * 100)}", end='')
-
-        g += 1
 
     for individual in p_population:
         print(individual)

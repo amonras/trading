@@ -50,10 +50,6 @@ def test_create_offspring_population():
 
 
 def test_non_dominated_sorting():
-    pass
-
-
-def test_evaluate_population():
     population = {}
     nsga2 = Nsga2(exchange, symbol, 'obv', tf, from_time, to_time, POP_SIZE)
 
@@ -62,9 +58,13 @@ def test_evaluate_population():
             br = BacktestResult()
             br.pnl = pnl
             br.max_dd = max_dd
-            population[pnl*100 + max_dd] = br
+            population[pnl * 100 + max_dd] = br
 
     fronts = nsga2.non_dominated_sorting(population)
 
     # There should be 19 fronts as there are 19 anti-diagonals in a 10x10 matrix
     assert len(fronts) == 19
+
+
+def test_evaluate_population():
+    pass
