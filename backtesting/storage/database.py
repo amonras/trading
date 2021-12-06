@@ -1,3 +1,4 @@
+import pathlib
 from typing import Tuple, List, Union
 import logging
 
@@ -12,7 +13,7 @@ logger = logging.getLogger()
 class Hdf5Client:
     def __init__(self, exchange, path=None):
         if path is None:
-            filename = f"data/{exchange}.h5"
+            filename = pathlib.Path(__file__).parent.parent / f"data/{exchange}.h5"
         else:
             filename = f"{path}/{exchange}.h5"
 
