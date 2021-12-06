@@ -7,3 +7,6 @@ __pycache__/
 
 backtesting/backtestingCpp/build/
 backtesting/backtestingCpp/.vscode/
+
+backtesting/Backtesting.egg-info/
+notebooks/
