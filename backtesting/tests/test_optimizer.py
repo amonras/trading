@@ -4,6 +4,7 @@ import pytest
 
 from backtesting.models.models import BacktestResult
 from backtesting.optimization.optimizer import Nsga2
+from optimization.genetic import optimize
 
 exchange = 'binance'
 symbol = 'BTCUSDT'
@@ -65,4 +66,7 @@ def test_non_dominated_sorting():
 
 
 def test_evaluate_population():
-    pass
+    now = int(datetime.datetime.now().timestamp() * 100)
+
+    results = optimize('binance', 'BTCUSDT', 'obv', '15m', 0, now, 10, 3)
+    assert len(results) == 10

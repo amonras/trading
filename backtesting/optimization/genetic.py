@@ -31,5 +31,4 @@ def optimize(exchange, symbol, strategy, tf, from_time, to_time, pop_size, gener
 
         p_population = nsga2.create_new_population(fronts)
 
-    for individual in p_population:
-        print(individual)
+    return p_population
