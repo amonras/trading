@@ -5,6 +5,8 @@ import pandas as pd
 from storage.database import Hdf5Client
 from utils import resample_timeframe
 
+import plotly.graph_objects as go
+
 
 class Strategy:
     def __init__(self, **kwargs):
@@ -14,12 +16,16 @@ class Strategy:
         self.from_time = None
         self.to_time = None
 
+        self.trades = None
+
     def set_target(self, exchange, symbol, tf, from_time, to_time, **kwargs):
         self.exchange: str = exchange
         self.symbol: str = symbol
         self.tf: str = tf
         self.from_time: int = from_time
         self.to_time: int = to_time
+
+        self.trades = None
 
     def name(self):
         pass
@@ -43,7 +49,26 @@ class Strategy:
         trades['log-cum-returns'] = trades['log-returns'].cumsum()
         trades['cum-returns'] = np.exp(trades['log-cum-returns'])
 
+        self.trades = trades
+
         return trades
+
+    def get_trades(self):
+        lines = []
+
+        for i, trade in self.trades.iterrows():
+            x = [trade['enter_at'], trade['exit_at']]
+            y = [trade['open'], trade['close']]
+            if (trade['close'] - trade['open'])*trade['position'] > 0:
+                color = 'green'
+            else:
+                color = 'red'
+
+            lines.append(
+                go.Scatter(x=x, y=y, marker=dict(color=color), name=f'trade {i}', mode='lines')
+            )
+
+        return lines
 
 
 class NativeStrategy(Strategy):
