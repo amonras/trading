@@ -1,6 +1,6 @@
 import datetime
 import pathlib
-from ctypes import c_void_p, c_char_p, c_longlong, c_int, c_double, CDLL
+from ctypes import c_void_p, c_char_p, c_longlong, c_int, c_double, CDLL, POINTER
 
 import pandas as pd
 
@@ -63,6 +63,18 @@ def get_library():
     lib.Sma_get_pnl.argtypes = [c_void_p]
     lib.Sma_get_max_dd.restype = c_double
     lib.Sma_get_max_dd.argtypes = [c_void_p]
+    lib.Sma_get_trades_size.restype = c_int
+    lib.Sma_get_trades_size.argtypes = [c_void_p]
+    lib.Sma_get_position.restype = POINTER(c_int)
+    lib.Sma_get_position.argtypes = [c_void_p]
+    lib.Sma_get_enter.restype = POINTER(c_double)
+    lib.Sma_get_enter.argtypes = [c_void_p]
+    lib.Sma_get_exit.restype = POINTER(c_double)
+    lib.Sma_get_exit.argtypes = [c_void_p]
+    lib.Sma_get_open.restype = POINTER(c_double)
+    lib.Sma_get_open.argtypes = [c_void_p]
+    lib.Sma_get_close.restype = POINTER(c_double)
+    lib.Sma_get_close.argtypes = [c_void_p]
 
     # PSAR
     lib.Psar_new.restype = c_void_p
