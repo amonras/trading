@@ -13,6 +13,12 @@ class Sma {
 
         std::vector<double> ts, open, high, low, close, volume;
 
+        std::vector<int> position = {};
+        std::vector<double> enter_at = {};
+        std::vector<double> exit_at = {};
+        std::vector<double> open_val = {};
+        std::vector<double> close_val = {};
+
         double pnl = 0.0;
         double max_dd = 0.0;
 

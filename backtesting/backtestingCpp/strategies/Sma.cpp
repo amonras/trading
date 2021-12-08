@@ -61,10 +61,18 @@ void Sma::execute_backtest(int slow_ma, int fast_ma) {
                 pnl += pnl_temp;
                 max_pnl = max(max_pnl, pnl);
                 max_dd = max(max_dd, max_pnl - pnl);
+
+                exit_at.push_back(ts[i + 1]);
+                close_val.push_back(close[i]);
             }
             
             current_position = 1;
             entry_price = close[i];
+
+            position.push_back(current_position);
+            // printf("%f\n", ts[i+1]);
+            enter_at.push_back(ts[i + 1]);
+            open_val.push_back(entry_price);
         }
 
         // Short signal
@@ -75,10 +83,19 @@ void Sma::execute_backtest(int slow_ma, int fast_ma) {
                 pnl += pnl_temp;
                 max_pnl = max(max_pnl, pnl);
                 max_dd = max(max_dd, max_pnl - pnl);
+
+                exit_at.push_back(ts[i + 1]);
+                close_val.push_back(close[i]);
             }
             
             current_position = -1;
             entry_price = close[i];
+
+            position.push_back(current_position);
+            // printf("%f\n", ts[i+1]);
+            enter_at.push_back(ts[i+1]);
+            open_val.push_back(entry_price);
+
         }
     }
 }
@@ -93,4 +110,11 @@ extern "C" {
     }
     double Sma_get_pnl(Sma* sma) { return sma->pnl; }
     double Sma_get_max_dd(Sma* sma) { return sma->max_dd; }
+
+    int Sma_get_trades_size(Sma* sma) { return sma->position.size(); }
+    int* Sma_get_position(Sma* sma) { return sma->position.data(); }
+    double* Sma_get_enter(Sma* sma) { return sma->enter_at.data(); }
+    double* Sma_get_exit(Sma* sma) { return sma->exit_at.data(); }
+    double* Sma_get_open(Sma* sma) { return sma->open.data(); }
+    double* Sma_get_close(Sma* sma) { return sma->close.data(); }
 }

@@ -93,3 +93,4 @@ class NativeStrategy(Strategy):
 
     def _backtest(self, df: pd.DataFrame) -> Tuple[float, float]:
         pass
+
