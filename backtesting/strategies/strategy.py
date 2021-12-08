@@ -32,6 +32,11 @@ class Strategy:
 
     def trade_history(self, df) -> pd.DataFrame:
         trades = self._trade_history(df)
+        try:
+            assert 'position' in trades.columns
+        except AssertionError as e:
+            print(trades.head())
+            raise e
 
         trades['pnl'] = trades['position'] * (trades['close'] - trades['open']) / trades['open']
         trades['log-returns'] = np.log(1 + trades['pnl'])

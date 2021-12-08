@@ -56,25 +56,28 @@ class Obv(NativeStrategy):
         return df["pnl"].sum(), df["drawdown"].max()
 
     def _trade_history(self, df) -> pd.DataFrame:
-        raw_df = self._compute_history(df)
+        raw_df = self._compute_history(df).dropna()
 
-        mask = raw_df['pnl'].notna()
+        # Compare a signal with the previous signal, assign distinct labels to each contiguous set of signals
+        trade_groups = (raw_df['signal'] != raw_df['signal'].shift(1)).astype(int).cumsum()
 
-        # Crop first and last candle
-        mask.iloc[0] = False
-        mask.iloc[-1] = False
+        # Signal is given at the end of last candle
+        position = raw_df['signal'].groupby(trade_groups).agg(lambda x: x[0])
+        # Position is entered at the current candle's start time
+        enter_at = raw_df['signal'].groupby(trade_groups.shift(1)).agg(lambda x: x.index.min())
+        # Position is exited at the next candle's start time
+        exit_at = raw_df['signal'].groupby(trade_groups.shift(2)).agg(lambda x: x.index.max())
+        # Position is open at first candle's open value
+        open_value = raw_df['open'].groupby(trade_groups.shift(1)).agg('first')
+        # Position is closed at last candle's close value
+        close_value = raw_df['close'].groupby(trade_groups.shift(1)).agg('last')
 
         trades = pd.DataFrame({
-            # Signal is given at the end of last candle
-            'position': raw_df[mask.shift(-1).fillna(False)]['signal'].values,
-            # Position is entered at the current candle's start time
-            'enter_at': raw_df[mask].index.values,
-            # Position is exited at the next candle start time
-            'exit_at': raw_df[mask.shift(1).fillna(False)].index.values,
-            # Position is open at current candle's open value
-            'open': raw_df[mask]['open'].values,
-            # Position is closed at current candle's close value
-            'close': raw_df[mask]['close'].values
-        })
+            'position': position,
+            'enter_at': enter_at,
+            'exit_at': exit_at,
+            'open': open_value,
+            'close': close_value
+        }).reset_index(drop=True)
 
         return trades

@@ -70,17 +70,7 @@ class Ichimoku(NativeStrategy):
                                          (df["prev_tenkan_minus_kijun"] > 0) &
                                          (df["close"] < df["senkou_span_a"]) &
                                          (df["close"] < df["senkou_span_b"]) &
-                                         (df["close"] < df["chikou_span"]), -1, np.NaN))
-
-        df = df[df["signal"] != 0].copy()
-
-        df['close_pct_change'] = df["close"].pct_change()
-
-        df["pnl"] = df["close"].pct_change() * df["signal"].shift(1)
-
-        df["cum_pnl"] = df["pnl"].cumsum()
-        df["max_cum_pnl"] = df["cum_pnl"].cummax()
-        df["drawdown"] = df["max_cum_pnl"] - df["cum_pnl"]
+                                         (df["close"] < df["chikou_span"]), -1, 0))
 
         return df
 
@@ -88,19 +78,35 @@ class Ichimoku(NativeStrategy):
 
         df = self._compute_history(df)
 
+        df = df[df["signal"] != 0].copy()
+
+        df["pnl"] = df["close"].pct_change() * df["signal"].shift(1)
+
+        df["cum_pnl"] = df["pnl"].cumsum()
+        df["max_cum_pnl"] = df["cum_pnl"].cummax()
+        df["drawdown"] = df["max_cum_pnl"] - df["cum_pnl"]
+
         return df["pnl"].sum(), df["drawdown"].max()
 
     def _trade_history(self, df) -> pd.DataFrame:
         raw_df = self._compute_history(df)
 
-        mask = raw_df['pnl'].notna()
+        mask = df['signal'] != 0
+
+        position = raw_df[mask]['signal'].values[:-2]
+
+        enter_at = raw_df[mask].index.values[1:-1]
+        open_val = raw_df[mask]['open'].values[1:-1]
+
+        exit_at = raw_df[mask].index.values[2:]
+        close_val = raw_df[mask]['open'].values[2:]  # This should actually be the close of the last candle of the pos.
 
         trades = pd.DataFrame({
-            'position': raw_df[mask.shift(-1).fillna(False)]['signal'].values,
-            'enter_at': raw_df[mask].index.values,
-            'exit_at': raw_df[mask.shift(1).fillna(False)].index.values,
-            'open': raw_df[mask]['open'].values,
-            'close': raw_df[mask]['close'].values
+            'position': position,
+            'enter_at': enter_at,
+            'exit_at': exit_at,
+            'open': open_val,
+            'close': close_val
         })
 
         return trades
