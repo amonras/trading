@@ -3,7 +3,6 @@ import numpy as np
 import ctypes
 
 from strategies.strategy import Strategy
-from utils import get_library
 
 
 class CppStrategy(Strategy):
@@ -104,7 +103,7 @@ class CppStrategy(Strategy):
 
         return array
 
-    def _trades(self):
+    def _trade_history(self, df):
         self._execute()
 
         size = self._size()
@@ -115,11 +114,13 @@ class CppStrategy(Strategy):
         open_value = self._open(size)
         close_value = self._close(size)
 
-        return pd.DataFrame({
+        df = pd.DataFrame({
             'position': positions,
             'enter_at': enter_at,
             'exit_at': exit_at,
             'open': open_value,
             'close': close_value
         })
+
+        return df
 

@@ -43,6 +43,6 @@ def test_trades(sma: Sma):
     sma.set_target(exchange=exchange, symbol=symbol, tf=tf, from_time=from_time, to_time=to_time, path="tests/resources")
     ret = sma.backtest()
 
-    trades = sma._trades()
+    trades = sma.trade_history(None)
     print(trades)
 
