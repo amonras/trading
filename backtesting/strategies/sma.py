@@ -2,7 +2,7 @@ import pathlib
 from typing import Tuple
 
 from strategies.cpp_strategy import CppStrategy
-from utils import get_library
+import plotly.graph_objects as go
 
 
 class Sma(CppStrategy):
@@ -34,3 +34,10 @@ class Sma(CppStrategy):
         max_drawdown = self.lib.get_max_dd(self.obj)
 
         return pnl, max_drawdown
+
+    def get_indicators(self, df):
+        slow_ma = df['close'].rolling(self.slow_ma).mean()
+        fast_ma = df['close'].rolling(self.fast_ma).mean()
+
+        return [go.Scatter(x=slow_ma.index, y=slow_ma.values, marker=dict(color='blue')),
+                go.Scatter(x=fast_ma.index, y=fast_ma.values, marker=dict(color='orange'))]

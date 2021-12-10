@@ -2,7 +2,8 @@ import random
 from typing import List, Dict
 import copy
 
-from strategies.strategy import NativeStrategy, Strategy
+from strategies.strategy import Strategy
+from strategies.native_strategy import NativeStrategy
 from utils import STRAT_PARAMS, resample_timeframe
 
 from storage.database import Hdf5Client

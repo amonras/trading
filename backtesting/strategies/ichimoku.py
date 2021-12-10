@@ -1,7 +1,8 @@
 import pandas as pd
 import numpy as np
 
-from strategies.strategy import Strategy, NativeStrategy
+from strategies.strategy import Strategy
+from strategies.native_strategy import NativeStrategy
 
 pd.set_option("display.max_columns", None)
 pd.set_option("display.max_rows", None)
