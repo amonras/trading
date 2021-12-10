@@ -59,22 +59,22 @@ def get_library():
     lib.Sma_execute_backtest.restype = c_void_p
     lib.Sma_execute_backtest.argtypes = [c_void_p, c_int, c_int]
 
-    lib.Sma_get_pnl.restype = c_double
-    lib.Sma_get_pnl.argtypes = [c_void_p]
-    lib.Sma_get_max_dd.restype = c_double
-    lib.Sma_get_max_dd.argtypes = [c_void_p]
-    lib.Sma_get_trades_size.restype = c_int
-    lib.Sma_get_trades_size.argtypes = [c_void_p]
-    lib.Sma_get_position.restype = POINTER(c_int)
-    lib.Sma_get_position.argtypes = [c_void_p]
-    lib.Sma_get_enter.restype = POINTER(c_double)
-    lib.Sma_get_enter.argtypes = [c_void_p]
-    lib.Sma_get_exit.restype = POINTER(c_double)
-    lib.Sma_get_exit.argtypes = [c_void_p]
-    lib.Sma_get_open.restype = POINTER(c_double)
-    lib.Sma_get_open.argtypes = [c_void_p]
-    lib.Sma_get_close.restype = POINTER(c_double)
-    lib.Sma_get_close.argtypes = [c_void_p]
+    # lib.Sma_get_pnl.restype = c_double
+    # lib.Sma_get_pnl.argtypes = [c_void_p]
+    # lib.Sma_get_max_dd.restype = c_double
+    # lib.Sma_get_max_dd.argtypes = [c_void_p]
+    # lib.Sma_get_trades_size.restype = c_int
+    # lib.Sma_get_trades_size.argtypes = [c_void_p]
+    # lib.Sma_get_position.restype = POINTER(c_int)
+    # lib.Sma_get_position.argtypes = [c_void_p]
+    # lib.Sma_get_enter.restype = POINTER(c_double)
+    # lib.Sma_get_enter.argtypes = [c_void_p]
+    # lib.Sma_get_exit.restype = POINTER(c_double)
+    # lib.Sma_get_exit.argtypes = [c_void_p]
+    # lib.Sma_get_open.restype = POINTER(c_double)
+    # lib.Sma_get_open.argtypes = [c_void_p]
+    # lib.Sma_get_close.restype = POINTER(c_double)
+    # lib.Sma_get_close.argtypes = [c_void_p]
 
     # PSAR
     lib.Psar_new.restype = c_void_p
@@ -86,5 +86,24 @@ def get_library():
     lib.Psar_get_pnl.argtypes = [c_void_p]
     lib.Psar_get_max_dd.restype = c_double
     lib.Psar_get_max_dd.argtypes = [c_void_p]
+
+    # Generic
+
+    lib._get_pnl.restype = c_double
+    lib._get_pnl.argtypes = [c_void_p]
+    lib._get_max_dd.restype = c_double
+    lib._get_max_dd.argtypes = [c_void_p]
+    lib._get_trades_size.restype = c_int
+    lib._get_trades_size.argtypes = [c_void_p]
+    lib._get_position.restype = POINTER(c_int)
+    lib._get_position.argtypes = [c_void_p]
+    lib._get_enter.restype = POINTER(c_double)
+    lib._get_enter.argtypes = [c_void_p]
+    lib._get_exit.restype = POINTER(c_double)
+    lib._get_exit.argtypes = [c_void_p]
+    lib._get_open.restype = POINTER(c_double)
+    lib._get_open.argtypes = [c_void_p]
+    lib._get_close.restype = POINTER(c_double)
+    lib._get_close.argtypes = [c_void_p]
 
     return lib

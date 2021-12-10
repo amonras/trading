@@ -5,8 +5,7 @@
 
 using namespace std;
 
-Sma::Sma(char* exchange_c, char* symbol_c, char* timeframe_c, long long from_time, long long to_time, char* path_c)
-{
+Sma::Sma(char* exchange_c, char* symbol_c, char* timeframe_c, long long from_time, long long to_time, char* path_c) {
     exchange = exchange_c;
     symbol = symbol_c;
     timeframe = timeframe_c;
@@ -19,7 +18,7 @@ Sma::Sma(char* exchange_c, char* symbol_c, char* timeframe_c, long long from_tim
 
     std::tie(ts, open, high, low, close, volume) = rearrange_candles(res, timeframe, from_time, to_time, array_size);
     // printf("%lu, %lu. %lu. %lu. %lu, %lu", ts.size(), open.size(), high.size(), low.size(), close.size(), volume.size());
-}
+};
 
 void Sma::execute_backtest(int slow_ma, int fast_ma) {
     pnl = 0.0;
@@ -98,17 +97,8 @@ void Sma::execute_backtest(int slow_ma, int fast_ma) {
             entry_time = ts[i + 1];
         }
     }
-}
-
-void Sma::track_trade(int new_pos, double enter_ts, double exit_ts, double open_price, double close_price) {            
-            position.push_back(new_pos);
-
-            enter_at.push_back(enter_ts);
-            exit_at.push_back(exit_ts);
-
-            open_val.push_back(open_price);
-            close_val.push_back(close_price);
 };
+
 
 extern "C" {
     Sma* Sma_new(char* exchange, char* symbol, char* timeframe, long long from_time, long long to_time, char* path) {
@@ -118,13 +108,13 @@ extern "C" {
     void Sma_execute_backtest(Sma* sma, int slow_ma, int fast_ma) {
         return sma->execute_backtest(slow_ma, fast_ma);
     }
-    double Sma_get_pnl(Sma* sma) { return sma->pnl; }
-    double Sma_get_max_dd(Sma* sma) { return sma->max_dd; }
+    // double Sma_get_pnl(Sma* sma) { return sma->pnl; }
+    // double Sma_get_max_dd(Sma* sma) { return sma->max_dd; }
 
-    int Sma_get_trades_size(Sma* sma) { return sma->position.size(); }
-    int* Sma_get_position(Sma* sma) { return sma->position.data(); }
-    double* Sma_get_enter(Sma* sma) { return sma->enter_at.data(); }
-    double* Sma_get_exit(Sma* sma) { return sma->exit_at.data(); }
-    double* Sma_get_open(Sma* sma) { return sma->open_val.data(); }
-    double* Sma_get_close(Sma* sma) { return sma->close_val.data(); }
+    // int Sma_get_trades_size(Sma* sma) { return sma->position.size(); }
+    // int* Sma_get_position(Sma* sma) { return sma->position.data(); }
+    // double* Sma_get_enter(Sma* sma) { return sma->enter_at.data(); }
+    // double* Sma_get_exit(Sma* sma) { return sma->exit_at.data(); }
+    // double* Sma_get_open(Sma* sma) { return sma->open_val.data(); }
+    // double* Sma_get_close(Sma* sma) { return sma->close_val.data(); }
 }
