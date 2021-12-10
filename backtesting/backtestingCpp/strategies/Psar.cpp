@@ -22,12 +22,17 @@ Psar::Psar(char* exchange_c, char* symbol_c, char* timeframe_c, long long from_t
 }
 
 void Psar::execute_backtest(double initial_acc, double accel_increment, double max_acc) {
-    pnl = 0.0;
-    max_dd = 0.0;
+    double pnl = 0.0;
+    double max_dd = 0.0;
 
     double max_pnl = 0.0;
     int current_position = 0;
     double entry_price;
+
+    double open_price;
+    double close_price;
+    double entry_time;
+    double exit_time;
 
     int trend[2] = { 0, 0 };
     double sar[2] = { 0.0, 0.0 };
@@ -90,6 +95,11 @@ void Psar::execute_backtest(double initial_acc, double accel_increment, double m
 
         if (trend[1] == 1 && trend[0] < 0) {
             if (current_position == -1) {
+                exit_time = ts[i + 1];
+                close_price = open[i + 1];
+
+                this->track_trade(-1, entry_time, exit_time, open_price, close_price);
+
                 double pnl_temp = (entry_price / close[i] -1) * 100;
                 pnl += pnl_temp;
                 max_pnl = max(max_pnl, pnl);
@@ -98,12 +108,19 @@ void Psar::execute_backtest(double initial_acc, double accel_increment, double m
             
             current_position = 1;
             entry_price = close[i];
-            // printf("%i: entering position\n", i);
+            
+            open_price = open[i + 1];
+            entry_time = ts[i + 1];
         }
 
         // Short signal
         else if (trend[1] == -1 && trend[0] > 0) {
             if (current_position == 1) {
+                exit_time = ts[i + 1];
+                close_price = open[i + 1];
+
+                this->track_trade(1, entry_time, exit_time, open_price, close_price);
+
                 double pnl_temp = (close[i]/entry_price -1) * 100;
                 pnl += pnl_temp;
                 max_pnl = max(max_pnl, pnl);
@@ -112,7 +129,9 @@ void Psar::execute_backtest(double initial_acc, double accel_increment, double m
             
             current_position = -1;
             entry_price = close[i];
-            // printf("%i: exiting position\n", i);
+
+            open_price = open[i + 1];
+            entry_time = ts[i + 1];
         }
 
         trend[0] = trend[1];
@@ -120,6 +139,9 @@ void Psar::execute_backtest(double initial_acc, double accel_increment, double m
         ep[0] = ep[1];
         af[0] = af[1];
     }
+
+    this->pnl = pnl;
+    this->max_dd = max_dd;
 }
 
 extern "C" {
@@ -129,6 +151,6 @@ extern "C" {
     void Psar_execute_backtest(Psar* psar, double initial_acc, double acc_increment, double max_acc) {
         return psar->execute_backtest(initial_acc, acc_increment, max_acc);
     }
-    double Psar_get_pnl(Psar* psar) { return psar->pnl; }
-    double Psar_get_max_dd(Psar* psar) { return psar->max_dd; }
+    // double Psar_get_pnl(Psar* psar) { return psar->pnl; }
+    // double Psar_get_max_dd(Psar* psar) { return psar->max_dd; }
 }

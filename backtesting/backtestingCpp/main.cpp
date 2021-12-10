@@ -3,7 +3,7 @@
 
 #include "Database.h"
 #include "Utils.h"
-#include "strategies/Psar.h"
+#include "strategies/Sma.h"
 #include "Utils.h"
 
 
@@ -29,7 +29,7 @@ int main(int, char**) {
     char* tf_char = strcpy((char*)malloc(timeframe.length() + 1), timeframe.c_str());
     char* path = "";
 
-    Psar psar(exchange_char, symbol_char, tf_char, 1609344600000.0, 1609354200000.0, path);
-    psar.execute_backtest(0.02, 0.02, 0.2);
-    printf("%f | %f\n", psar.pnl, psar.max_dd);
+    Sma sma(exchange_char, symbol_char, tf_char, 1609344600000.0, 1609354200000.0, path);
+    sma.execute_backtest(10, 5);
+    printf("%f | %f\n", sma.pnl, sma.max_dd);
 }

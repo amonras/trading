@@ -5,8 +5,7 @@
 
 using namespace std;
 
-Sma::Sma(char* exchange_c, char* symbol_c, char* timeframe_c, long long from_time, long long to_time, char* path_c)
-{
+Sma::Sma(char* exchange_c, char* symbol_c, char* timeframe_c, long long from_time, long long to_time, char* path_c) {
     exchange = exchange_c;
     symbol = symbol_c;
     timeframe = timeframe_c;
@@ -19,20 +18,24 @@ Sma::Sma(char* exchange_c, char* symbol_c, char* timeframe_c, long long from_tim
 
     std::tie(ts, open, high, low, close, volume) = rearrange_candles(res, timeframe, from_time, to_time, array_size);
     // printf("%lu, %lu. %lu. %lu. %lu, %lu", ts.size(), open.size(), high.size(), low.size(), close.size(), volume.size());
-}
+};
 
 void Sma::execute_backtest(int slow_ma, int fast_ma) {
-    pnl = 0.0;
-    max_dd = 0.0;
+    double pnl = 0.0;
+    double max_dd = 0.0;
 
     double max_pnl = 0.0;
     int current_position = 0;
-    double entry_price;
+    double open_price;
+    double close_price;
+    double entry_time;
+    double exit_time;
 
     vector<double> slow_ma_closes = {};
     vector<double> fast_ma_closes = {};
 
-    for (int i = 0; i < ts.size(); i++) {
+    // Avoid looping till the very last candle because we need to reference i+1
+    for (int i = 0; i < ts.size() - 1; i++) {
         slow_ma_closes.push_back(close[i]);
         fast_ma_closes.push_back(close[i]);
 
@@ -57,31 +60,48 @@ void Sma::execute_backtest(int slow_ma, int fast_ma) {
 
         if (mean_fast > mean_slow && current_position <= 0 ) {
             if (current_position == -1) {
-                double pnl_temp = (entry_price / close[i] -1) * 100;
+                exit_time = ts[i + 1];
+                close_price = open[i + 1];
+
+                this->track_trade(-1, entry_time, exit_time, open_price, close_price);
+
+                double pnl_temp = (open_price / close[i] -1 ) * 100;
                 pnl += pnl_temp;
                 max_pnl = max(max_pnl, pnl);
                 max_dd = max(max_dd, max_pnl - pnl);
+                
             }
             
             current_position = 1;
-            entry_price = close[i];
+            open_price = open[i + 1];
+            entry_time = ts[i + 1];
         }
 
         // Short signal
         
         if (mean_fast < mean_slow && current_position >= 0 ) {
             if (current_position == 1) {
-                double pnl_temp = (close[i]/entry_price -1) * 100;
+                exit_time = ts[i + 1];
+                close_price = open[i + 1];
+
+                this->track_trade(1 , entry_time, exit_time, open_price, close_price);
+
+                double pnl_temp = (close[i] / open_price -1 ) * 100;
                 pnl += pnl_temp;
                 max_pnl = max(max_pnl, pnl);
                 max_dd = max(max_dd, max_pnl - pnl);
             }
             
             current_position = -1;
-            entry_price = close[i];
+            open_price = open[i + 1];
+            entry_time = ts[i + 1];
         }
     }
-}
+    this->pnl = pnl;
+    this->max_dd = max_dd;
+    
+};
+
 
 extern "C" {
     Sma* Sma_new(char* exchange, char* symbol, char* timeframe, long long from_time, long long to_time, char* path) {
@@ -91,6 +111,4 @@ extern "C" {
     void Sma_execute_backtest(Sma* sma, int slow_ma, int fast_ma) {
         return sma->execute_backtest(slow_ma, fast_ma);
     }
-    double Sma_get_pnl(Sma* sma) { return sma->pnl; }
-    double Sma_get_max_dd(Sma* sma) { return sma->max_dd; }
 }

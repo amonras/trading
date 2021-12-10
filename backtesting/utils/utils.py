@@ -1,6 +1,6 @@
 import datetime
 import pathlib
-from ctypes import c_void_p, c_char_p, c_longlong, c_int, c_double, CDLL
+from ctypes import c_void_p, c_char_p, c_longlong, c_int, c_double, CDLL, POINTER
 
 import pandas as pd
 
@@ -28,7 +28,7 @@ STRAT_PARAMS = {
     },
     'psar': {
         'initial_acc': {'name': 'Initial Acceleration', 'type': float, 'min': 0.01, 'max': 0.2, "decimals": 2},
-        'acc_increment': {'name': 'Acceleration Increment', 'type': float, 'min': 0.01, 'max': 0.3, "decimals": 2},
+        'acc_increment': {'name': 'Acceleration Increment', 'type': float, 'min': 0.03, 'max': 0.3, "decimals": 2},
         'max_acc': {'name': 'Max. Acceleration', 'type': float, 'min': 0.05, 'max': 1, "decimals": 2},
     },
 }
@@ -59,10 +59,22 @@ def get_library():
     lib.Sma_execute_backtest.restype = c_void_p
     lib.Sma_execute_backtest.argtypes = [c_void_p, c_int, c_int]
 
-    lib.Sma_get_pnl.restype = c_double
-    lib.Sma_get_pnl.argtypes = [c_void_p]
-    lib.Sma_get_max_dd.restype = c_double
-    lib.Sma_get_max_dd.argtypes = [c_void_p]
+    # lib.Sma_get_pnl.restype = c_double
+    # lib.Sma_get_pnl.argtypes = [c_void_p]
+    # lib.Sma_get_max_dd.restype = c_double
+    # lib.Sma_get_max_dd.argtypes = [c_void_p]
+    # lib.Sma_get_trades_size.restype = c_int
+    # lib.Sma_get_trades_size.argtypes = [c_void_p]
+    # lib.Sma_get_position.restype = POINTER(c_int)
+    # lib.Sma_get_position.argtypes = [c_void_p]
+    # lib.Sma_get_enter.restype = POINTER(c_double)
+    # lib.Sma_get_enter.argtypes = [c_void_p]
+    # lib.Sma_get_exit.restype = POINTER(c_double)
+    # lib.Sma_get_exit.argtypes = [c_void_p]
+    # lib.Sma_get_open.restype = POINTER(c_double)
+    # lib.Sma_get_open.argtypes = [c_void_p]
+    # lib.Sma_get_close.restype = POINTER(c_double)
+    # lib.Sma_get_close.argtypes = [c_void_p]
 
     # PSAR
     lib.Psar_new.restype = c_void_p
@@ -70,9 +82,28 @@ def get_library():
     lib.Psar_execute_backtest.restype = c_void_p
     lib.Psar_execute_backtest.argtypes = [c_void_p, c_double, c_double, c_double]
 
-    lib.Psar_get_pnl.restype = c_double
-    lib.Psar_get_pnl.argtypes = [c_void_p]
-    lib.Psar_get_max_dd.restype = c_double
-    lib.Psar_get_max_dd.argtypes = [c_void_p]
+    # lib.Psar_get_pnl.restype = c_double
+    # lib.Psar_get_pnl.argtypes = [c_void_p]
+    # lib.Psar_get_max_dd.restype = c_double
+    # lib.Psar_get_max_dd.argtypes = [c_void_p]
+
+    # Generic
+
+    lib.get_pnl.restype = c_double
+    lib.get_pnl.argtypes = [c_void_p]
+    lib.get_max_dd.restype = c_double
+    lib.get_max_dd.argtypes = [c_void_p]
+    lib.get_trades_size.restype = c_int
+    lib.get_trades_size.argtypes = [c_void_p]
+    lib.get_position.restype = POINTER(c_int)
+    lib.get_position.argtypes = [c_void_p]
+    lib.get_enter.restype = POINTER(c_double)
+    lib.get_enter.argtypes = [c_void_p]
+    lib.get_exit.restype = POINTER(c_double)
+    lib.get_exit.argtypes = [c_void_p]
+    lib.get_open.restype = POINTER(c_double)
+    lib.get_open.argtypes = [c_void_p]
+    lib.get_close.restype = POINTER(c_double)
+    lib.get_close.argtypes = [c_void_p]
 
     return lib

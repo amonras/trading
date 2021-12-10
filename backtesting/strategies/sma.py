@@ -1,11 +1,11 @@
 import pathlib
 from typing import Tuple
 
-from strategies.strategy import Strategy
+from strategies.cpp_strategy import CppStrategy
 from utils import get_library
 
 
-class Sma(Strategy):
+class Sma(CppStrategy):
     def __init__(self, slow_ma: int, fast_ma: int):
         super(Sma, self).__init__()
         self.slow_ma = slow_ma
@@ -14,11 +14,10 @@ class Sma(Strategy):
     def name(self):
         return 'sma'
 
-    def backtest(self) -> Tuple[float, float]:
-        lib = get_library()
+    def _execute(self):
 
         path = str((pathlib.Path(__file__).parent.parent / 'data').absolute())
-        obj = lib.Sma_new(
+        self.obj = self.lib.Sma_new(
             self.exchange.encode(),
             self.symbol.encode(),
             self.tf.encode(),
@@ -26,8 +25,12 @@ class Sma(Strategy):
             self.to_time,
             path.encode()
         )
-        lib.Sma_execute_backtest(obj, self.slow_ma, self.fast_ma)
-        pnl = lib.Sma_get_pnl(obj)
-        max_drawdown = lib.Sma_get_max_dd(obj)
+        self.lib.Sma_execute_backtest(self.obj, self.slow_ma, self.fast_ma)
+
+    def backtest(self) -> Tuple[float, float]:
+        self._execute()
+
+        pnl = self.lib.get_pnl(self.obj)
+        max_drawdown = self.lib.get_max_dd(self.obj)
 
         return pnl, max_drawdown
