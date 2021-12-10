@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import mplfinance as mpf
 
-from strategies.strategy import NativeStrategy
+from strategies.native_strategy import NativeStrategy
 
 pd.set_option("display.max_columns", None)
 pd.set_option("display.max_rows", None)
