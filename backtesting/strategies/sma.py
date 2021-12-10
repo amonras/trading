@@ -11,15 +11,6 @@ class Sma(CppStrategy):
         self.slow_ma = slow_ma
         self.fast_ma = fast_ma
 
-        self.lib = get_library()
-
-        self.size_callback = self.lib._get_trades_size
-        self.position_callback = self.lib._get_position
-        self.entry_callback = self.lib._get_enter
-        self.exit_callback = self.lib._get_exit
-        self.open_callback = self.lib._get_open
-        self.close_callback = self.lib._get_close
-
     def name(self):
         return 'sma'
 
@@ -39,7 +30,7 @@ class Sma(CppStrategy):
     def backtest(self) -> Tuple[float, float]:
         self._execute()
 
-        pnl = self.lib._get_pnl(self.obj)
-        max_drawdown = self.lib._get_max_dd(self.obj)
+        pnl = self.lib.get_pnl(self.obj)
+        max_drawdown = self.lib.get_max_dd(self.obj)
 
         return pnl, max_drawdown

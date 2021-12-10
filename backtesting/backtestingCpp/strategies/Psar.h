@@ -1,7 +1,8 @@
 #include <string>
 #include <vector>
+#include "Strategy.h"
 
-class Psar {
+class Psar : public Strategy {
     public:
         Psar(char* exchange_c, char* symbol_c, char* timeframe_c, long long from_time, long long to_time, char* path_c);
         void execute_backtest(double initial_acc, double accel_increment, double max_acc);
@@ -12,8 +13,5 @@ class Psar {
         std::string path;
 
         std::vector<double> ts, open, high, low, close, volume;
-
-        double pnl = 0.0;
-        double max_dd = 0.0;
 
 };

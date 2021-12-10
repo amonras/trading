@@ -21,8 +21,8 @@ Sma::Sma(char* exchange_c, char* symbol_c, char* timeframe_c, long long from_tim
 };
 
 void Sma::execute_backtest(int slow_ma, int fast_ma) {
-    pnl = 0.0;
-    max_dd = 0.0;
+    double pnl = 0.0;
+    double max_dd = 0.0;
 
     double max_pnl = 0.0;
     int current_position = 0;
@@ -97,6 +97,9 @@ void Sma::execute_backtest(int slow_ma, int fast_ma) {
             entry_time = ts[i + 1];
         }
     }
+    this->pnl = pnl;
+    this->max_dd = max_dd;
+    
 };
 
 
@@ -108,13 +111,4 @@ extern "C" {
     void Sma_execute_backtest(Sma* sma, int slow_ma, int fast_ma) {
         return sma->execute_backtest(slow_ma, fast_ma);
     }
-    // double Sma_get_pnl(Sma* sma) { return sma->pnl; }
-    // double Sma_get_max_dd(Sma* sma) { return sma->max_dd; }
-
-    // int Sma_get_trades_size(Sma* sma) { return sma->position.size(); }
-    // int* Sma_get_position(Sma* sma) { return sma->position.data(); }
-    // double* Sma_get_enter(Sma* sma) { return sma->enter_at.data(); }
-    // double* Sma_get_exit(Sma* sma) { return sma->exit_at.data(); }
-    // double* Sma_get_open(Sma* sma) { return sma->open_val.data(); }
-    // double* Sma_get_close(Sma* sma) { return sma->close_val.data(); }
 }

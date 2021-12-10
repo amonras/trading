@@ -3,6 +3,7 @@ import numpy as np
 import ctypes
 
 from strategies.strategy import Strategy
+from utils import get_library
 
 
 class CppStrategy(Strategy):
@@ -11,12 +12,14 @@ class CppStrategy(Strategy):
 
         self.obj = None
 
-        self.size_callback = None
-        self.position_callback = None
-        self.entry_callback = None
-        self.exit_callback = None
-        self.open_callback = None
-        self.close_callback = None
+        self.lib = get_library()
+
+        self.size_callback = self.lib.get_trades_size
+        self.position_callback = self.lib.get_position
+        self.entry_callback = self.lib.get_enter
+        self.exit_callback = self.lib.get_exit
+        self.open_callback = self.lib.get_open
+        self.close_callback = self.lib.get_close
 
     def _execute(self):
         pass
@@ -26,6 +29,9 @@ class CppStrategy(Strategy):
         # return self.lib.Sma_get_trades_size(self.obj)
 
     def _positions(self, size):
+        if size == 0:
+            return []
+
         # ArrayType = ctypes.c_int * size
         head_pointer = self.position_callback(self.obj)
         # head_pointer = self.lib.Sma_get_position(self.obj)
@@ -40,6 +46,8 @@ class CppStrategy(Strategy):
         return np.frombuffer(array_pointer.contents, dtype=ctypes.c_int, count=size)
 
     def _enter_at(self, size):
+        if size == 0:
+            return []
         # ArrayType = ctypes.c_int * size
         head_pointer = self.entry_callback(self.obj)
         # head_pointer = self.lib.Sma_get_enter(self.obj)
@@ -56,6 +64,9 @@ class CppStrategy(Strategy):
         return array.astype('datetime64[ms]')
 
     def _exit_at(self, size):
+        if size == 0:
+            return []
+
         # ArrayType = ctypes.c_int * size
         head_pointer = self.exit_callback(self.obj)
         # head_pointer = self.lib.Sma_get_exit(self.obj)
@@ -72,6 +83,9 @@ class CppStrategy(Strategy):
         return array.astype('datetime64[ms]')
 
     def _open(self, size):
+        if size == 0:
+            return []
+
         # ArrayType = ctypes.c_int * size
         head_pointer = self.open_callback(self.obj)
         # head_pointer = self.lib.Sma_get_enter(self.obj)
@@ -88,6 +102,9 @@ class CppStrategy(Strategy):
         return array
 
     def _close(self, size):
+        if size == 0:
+            return []
+
         # ArrayType = ctypes.c_int * size
         head_pointer = self.close_callback(self.obj)
         # head_pointer = self.lib.Sma_get_enter(self.obj)
@@ -123,4 +140,3 @@ class CppStrategy(Strategy):
         })
 
         return df
-

@@ -2,7 +2,7 @@
 #include <vector>
 #include "Strategy.h"
 
-class Sma: public Strategy {
+class Sma : public Strategy {
     public:
         Sma(char* exchange_c, char* symbol_c, char* timeframe_c, long long from_time, long long to_time, char* path_c);
         void execute_backtest(int slow_ma, int fast_ma);
