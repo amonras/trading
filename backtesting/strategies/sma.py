@@ -11,6 +11,8 @@ class Sma(CppStrategy):
         self.slow_ma = slow_ma
         self.fast_ma = fast_ma
 
+        self.obj_creator = self.lib.Sma_new
+
     def name(self):
         return 'sma'
 
