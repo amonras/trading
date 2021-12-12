@@ -35,7 +35,7 @@ void Sma::execute_backtest(int slow_ma, int fast_ma) {
     vector<double> fast_ma_closes = {};
 
     // Avoid looping till the very last candle because we need to reference i+1
-    for (int i = 0; i < ts.size() - 1; i++) {
+    for (int i = 0; i < ts.size(); i++) {
         slow_ma_closes.push_back(close[i]);
         fast_ma_closes.push_back(close[i]);
 
@@ -47,6 +47,8 @@ void Sma::execute_backtest(int slow_ma, int fast_ma) {
         }
 
         if(slow_ma_closes.size() < slow_ma) {
+            track_position(0);
+            // printf("Tracking position at i=%d\n", i);
             continue;
         }
 
@@ -63,7 +65,7 @@ void Sma::execute_backtest(int slow_ma, int fast_ma) {
                 exit_time = ts[i + 1];
                 close_price = open[i + 1];
 
-                this->track_trade(-1, entry_time, exit_time, open_price, close_price);
+                track_trade(-1, entry_time, exit_time, open_price, close_price);
 
                 double pnl_temp = (open_price / close[i] -1 ) * 100;
                 pnl += pnl_temp;
@@ -84,7 +86,7 @@ void Sma::execute_backtest(int slow_ma, int fast_ma) {
                 exit_time = ts[i + 1];
                 close_price = open[i + 1];
 
-                this->track_trade(1 , entry_time, exit_time, open_price, close_price);
+                track_trade(1 , entry_time, exit_time, open_price, close_price);
 
                 double pnl_temp = (close[i] / open_price -1 ) * 100;
                 pnl += pnl_temp;
@@ -96,7 +98,12 @@ void Sma::execute_backtest(int slow_ma, int fast_ma) {
             open_price = open[i + 1];
             entry_time = ts[i + 1];
         }
+        track_position(current_position);
+        // printf("Tracking position at i=%d\n", i);
     }
+    track_position(0);
+    // printf("Tracking position at i=final\n");
+
     this->pnl = pnl;
     this->max_dd = max_dd;
     
