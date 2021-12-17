@@ -12,6 +12,10 @@ void Strategy::track_trade(int new_pos, double enter_ts, double exit_ts, double 
     close_val.push_back(close_price);
 };
 
+void Strategy::track_signal(int pos) {
+    signal_history.push_back(pos);
+}
+
 extern "C" {
     double get_pnl(Strategy* obj) { return obj->pnl; }
     double get_max_dd(Strategy* obj) { return obj->max_dd; }
@@ -22,4 +26,7 @@ extern "C" {
     double* get_exit(Strategy* obj) { return obj->exit_at.data(); }
     double* get_open(Strategy* obj) { return obj->open_val.data(); }
     double* get_close(Strategy* obj) { return obj->close_val.data(); }
+
+    int get_signal_history_size(Strategy* obj) { return obj->signal_history.size(); }
+    int* get_signal_history(Strategy* obj) { return obj->signal_history.data(); }
 }

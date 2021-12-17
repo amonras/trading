@@ -3,3 +3,4 @@ from .ichimoku import Ichimoku
 from .support_resistance import SupportResistance
 from .sma import Sma
 from .psar import Psar
+from .composite import Composite

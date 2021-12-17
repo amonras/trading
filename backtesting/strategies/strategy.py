@@ -27,13 +27,45 @@ class Strategy:
     def name(self):
         pass
 
+    def signal_history(self, df):
+        pass
+
+    def trade_history_from_signal(self, df):
+        signal = self.signal_history(df)
+        # Compare a signal with the previous signal, assign distinct labels to each contiguous set of signals
+        trade_groups = (signal != signal.shift(1)).astype(int).cumsum()
+
+        # Signal is given at the end of last candle
+        position = signal.groupby(trade_groups).agg(lambda x: x[0])
+        # Position is entered at the current candle's start time
+        enter_at = signal.groupby(trade_groups.shift(1)).agg(lambda x: x.index.min())
+        # Position is exited at the next candle's start time
+        exit_at = signal.groupby(trade_groups.shift(2)).agg(lambda x: x.index.max())
+        # Position is open at first candle's open value
+        open_value = df['open'].groupby(trade_groups.shift(1)).agg('first')
+        # Position is closed at last candle's close value
+        close_value = df['open'].groupby(trade_groups.shift(2)).agg('last')
+
+        trades = pd.DataFrame({
+            'position': position,
+            'enter_at': enter_at,
+            'exit_at': exit_at,
+            'open': open_value,
+            'close': close_value
+        })
+
+        trades = trades[trades['position'] != 0].reset_index(drop=True)[:-1]
+
+        return trades
+
     def backtest(self, df: Optional[pd.DataFrame] = None) -> Tuple[float, float]:
         pass
 
     def _trade_history(self, df) -> pd.DataFrame:
-        pass
+        return self.trade_history_from_signal(df)
 
     def trade_history(self, df) -> pd.DataFrame:
+
         trades = self._trade_history(df)
         try:
             assert 'position' in trades.columns

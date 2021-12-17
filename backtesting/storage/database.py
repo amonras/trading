@@ -62,7 +62,7 @@ class Hdf5Client:
         data = np.array(sorted(existing_data, key=lambda x: x[0]))
 
         df = pd.DataFrame(data, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
-        df = df[(df['timestamp'] >= from_time) & (df['timestamp'] <= to_time)]
+        df = df[(df['timestamp'] >= from_time) & (df['timestamp'] < to_time)]
 
         df['timestamp'] = pd.to_datetime(df['timestamp'].values.astype(np.int64), unit='ms')
         df.set_index('timestamp', drop=True, inplace=True)

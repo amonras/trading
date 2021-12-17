@@ -12,30 +12,13 @@ class Psar(CppStrategy):
         self.acc_increment = acc_increment
         self.max_acc = max_acc
 
+        self.obj_creator = self.lib.Psar_new
+
     def name(self):
         return 'psar'
 
-    # def backtest(self) -> Tuple[float, float]:
-    #     lib = get_library()
-    #
-    #     path = str((pathlib.Path(__file__).parent.parent / 'data').absolute())
-    #
-    #     obj = lib.Psar_new(
-    #         self.exchange.encode(),
-    #         self.symbol.encode(),
-    #         self.tf.encode(),
-    #         self.from_time,
-    #         self.to_time,
-    #         path.encode()
-    #     )
-    #     lib.Psar_execute_backtest(obj, self.initial_acc, self.acc_increment, self.max_acc)
-    #     pnl = lib.Psar_get_pnl(obj)
-    #     max_drawdown = lib.Psar_get_max_dd(obj)
-    #
-    #     return pnl, max_drawdown
-
     def _execute(self):
-
+        super()._execute()
         path = str((pathlib.Path(__file__).parent.parent / 'data').absolute())
         self.obj = self.lib.Psar_new(
             self.exchange.encode(),

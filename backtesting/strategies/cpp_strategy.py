@@ -21,12 +21,40 @@ class CppStrategy(Strategy):
         self.open_callback = self.lib.get_open
         self.close_callback = self.lib.get_close
 
+        self.signal_history_size_callback = self.lib.get_position_history_size
+        self.signal_history_callback = self.lib.get_position_history
+
     def _execute(self):
         pass
 
+    def _signal_history_size(self):
+        return self.signal_history_size_callback(self.obj)
+
+    def _signal_history(self, size):
+        if size == 0:
+            return []
+
+        head_pointer = self.signal_history_callback(self.obj)
+        array_pointer = ctypes.cast(head_pointer, ctypes.POINTER(ctypes.c_int * size))
+        return np.frombuffer(array_pointer.contents, dtype=ctypes.c_int, count=size)
+
+    def signal_history(self, df):
+        self._execute()
+
+        size = self._signal_history_size()
+
+        signal_history = self._signal_history(size)
+
+        df = pd.Series(
+            signal_history,
+            index=df.index,
+            name='signal'
+        )
+
+        return df
+
     def _size(self):
         return self.size_callback(self.obj)
-        # return self.lib.Sma_get_trades_size(self.obj)
 
     def _positions(self, size):
         if size == 0:
