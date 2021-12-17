@@ -29,7 +29,7 @@ tuple< vector<double>, vector<double>, vector<double>, vector<double>, vector<do
     double current_c;
     double current_v;
 
-
+    // printf("Rearranging %d candles: %f ratio\n", array_size, array_size/tf_ms);
     for (int i = 0; i < array_size; i++) 
     { 
         if(candles[i][0] < from_time) {
@@ -91,6 +91,6 @@ tuple< vector<double>, vector<double>, vector<double>, vector<double>, vector<do
             current_v +=  candles[i][5];
         }
     }
-    
+
     return make_tuple(ts, open, high, low, close, volume); 
 }

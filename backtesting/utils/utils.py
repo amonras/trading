@@ -39,7 +39,7 @@ def ms_to_dt(ms: int) -> datetime.datetime:
 
 
 def resample_timeframe(data: pd.DataFrame, tf: str) -> pd.DataFrame:
-    return data.resample(TF_EQUIV[tf]).agg(
+    return data.resample(TF_EQUIV[tf], origin='start').agg(
         {
             'open': 'first',
             'high': 'max',

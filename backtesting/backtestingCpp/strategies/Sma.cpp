@@ -101,7 +101,7 @@ void Sma::execute_backtest(int slow_ma, int fast_ma) {
         track_position(current_position);
         // printf("Tracking position at i=%d\n", i);
     }
-    track_position(0);
+    // track_position(0);
     // printf("Tracking position at i=final\n");
 
     this->pnl = pnl;

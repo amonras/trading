@@ -144,7 +144,6 @@ void Psar::execute_backtest(double initial_acc, double accel_increment, double m
 
         track_position(current_position);
     }
-    track_position(0);
 
     this->pnl = pnl;
     this->max_dd = max_dd;
