@@ -47,7 +47,7 @@ void Sma::execute_backtest(int slow_ma, int fast_ma) {
         }
 
         if(slow_ma_closes.size() < slow_ma) {
-            track_position(0);
+            track_signal(0);
             // printf("Tracking position at i=%d\n", i);
             continue;
         }
@@ -98,7 +98,7 @@ void Sma::execute_backtest(int slow_ma, int fast_ma) {
             open_price = open[i + 1];
             entry_time = ts[i + 1];
         }
-        track_position(current_position);
+        track_signal(current_position);
         // printf("Tracking position at i=%d\n", i);
     }
     // track_position(0);

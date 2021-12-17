@@ -106,9 +106,9 @@ def get_library():
     lib.get_close.restype = POINTER(c_double)
     lib.get_close.argtypes = [c_void_p]
 
-    lib.get_position_history_size.restype = c_int
-    lib.get_position_history_size.argtypes = [c_void_p]
-    lib.get_position_history.restype = POINTER(c_int)
-    lib.get_position_history.argtypes = [c_void_p]
+    lib.get_signal_history_size.restype = c_int
+    lib.get_signal_history_size.argtypes = [c_void_p]
+    lib.get_signal_history.restype = POINTER(c_int)
+    lib.get_signal_history.argtypes = [c_void_p]
 
     return lib
