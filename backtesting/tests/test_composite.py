@@ -67,6 +67,7 @@ def test_trades_from_signal_match(strategy: Composite, data: pd.DataFrame):
 
     assert python_calculation.equals(cpp_calculation)
 
+
 def test_real_case():
     from_date = int(datetime(2021, 1, 1).timestamp() * 1000)
     to_date = int(datetime(2021, 7, 1).timestamp() * 1000)
@@ -84,11 +85,11 @@ def test_real_case():
               {'slow_ma': 99, 'fast_ma': 3}]
 
     strategy = Composite([Sma(**model) for model in models])
-    strategy.set_target('binance', 'BTCUSDT', '1h', to_date, today)
+    strategy.set_target('binance', 'BTCUSDT', '1h', from_date, to_date)
     strategy._execute()
 
     db = Hdf5Client('binance')
-    data = db.get_data('BTCUSDT', to_date, today).sort_index()
+    data = db.get_data('BTCUSDT', from_date, to_date).sort_index()
     db.hf.close()
     df = resample_timeframe(data, '1h')
 

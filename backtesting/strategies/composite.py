@@ -8,9 +8,10 @@ from tqdm import tqdm
 
 
 class Composite(Strategy):
-    def __init__(self, models: List[CppStrategy], **kwargs):
+    def __init__(self, models: List[CppStrategy], threshold: float = 0, **kwargs):
         super().__init__(**kwargs)
         self.models = {i: model for i, model in enumerate(models)}
+        self.threshold = threshold
 
     def name(self):
         return "composite"
@@ -32,12 +33,11 @@ class Composite(Strategy):
             cpp_model: CppStrategy = model
             signals[k] = cpp_model.signal_history(df)
 
-
-        vote: pd.Series = pd.DataFrame(signals).apply(np.sum, axis=1)
+        vote: pd.Series = pd.DataFrame(signals).apply(np.mean, axis=1)
 
         signals_df = pd.Series(
-            np.where(vote > 0, 1,
-                     np.where(vote < 0, -1, 0)
+            np.where(vote > self.threshold, 1,
+                     np.where(vote < -self.threshold, -1, 0)
                      ),
             index=vote.index
         )
