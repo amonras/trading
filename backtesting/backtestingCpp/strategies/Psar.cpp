@@ -48,8 +48,8 @@ void Psar::execute_backtest(double initial_acc, double accel_increment, double m
     ep[0] = trend[0] > 0 ? high[1] : low[1];
     af[0] = initial_acc;
 
-    track_position(0);
-    track_position(0);
+    track_signal(0);
+    track_signal(0);
 
     for (int i = 2; i < ts.size(); i++) {
         // Trend
@@ -142,9 +142,8 @@ void Psar::execute_backtest(double initial_acc, double accel_increment, double m
         ep[0] = ep[1];
         af[0] = af[1];
 
-        track_position(current_position);
+        track_signal(current_position);
     }
-    track_position(0);
 
     this->pnl = pnl;
     this->max_dd = max_dd;

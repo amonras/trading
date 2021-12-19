@@ -5,7 +5,7 @@ class Strategy
  {
    protected:
         void track_trade(int new_pos, double enter_ts, double exit_ts, double open_price, double close_price);
-        void track_position(int pos);
+        void track_signal(int pos);
 
         std::string exchange;
         std::string symbol;
@@ -16,7 +16,7 @@ class Strategy
 
     public:
 
-        std::vector<int> position_history = {};
+        std::vector<int> signal_history = {};
         std::vector<int> position = {};
         std::vector<double> enter_at = {};
         std::vector<double> exit_at = {};
