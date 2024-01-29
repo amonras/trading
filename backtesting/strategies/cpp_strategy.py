@@ -21,8 +21,8 @@ class CppStrategy(Strategy):
         self.open_callback = self.lib.get_open
         self.close_callback = self.lib.get_close
 
-        self.signal_history_size_callback = self.lib.get_position_history_size
-        self.signal_history_callback = self.lib.get_position_history
+        self.signal_history_size_callback = self.lib.get_signal_history_size
+        self.signal_history_callback = self.lib.get_signal_history
 
     def _execute(self):
         pass

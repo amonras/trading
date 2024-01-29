@@ -70,7 +70,8 @@ def test_signal_history(strategy: CppStrategy, data: pd.DataFrame):
 
 
 def test_signal_history_returns_same_size(strategy: CppStrategy, data: pd.DataFrame):
-    pass
+    signal = strategy.signal_history(data)
+    assert len(signal) == len(data)
 
 
 def test_trades_from_signal_match(strategy: CppStrategy, data: pd.DataFrame):
@@ -79,5 +80,7 @@ def test_trades_from_signal_match(strategy: CppStrategy, data: pd.DataFrame):
 
     # Trades computed according to trade records from C++
     cpp_calculation = strategy._trade_history(data)
+    print(python_calculation)
+    print(cpp_calculation)
 
     assert python_calculation.equals(cpp_calculation)
